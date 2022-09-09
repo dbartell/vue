@@ -25,25 +25,41 @@ export default {
     return {
       search: '',
       results: [],
+      cast: [],
       loading: false,
       error: null
     }
   },
   methods: {
     async fetchCharacter() {
-      
+
       try {
         this.loading = false;
         this.error = null;
         const url = `https://www.anapioficeandfire.com/api/characters?name=${this.search}`;
         const { data } = await axios.get(url);
-        this.results = data;
-        console.log(this.results)
+        const charactersPlusCastInformation = data.map(character => {
+          const foundCastInformation = this.cast.find(castMember => castMember.character.name === character.name)
+          return {...character, ...foundCastInformation.character};
+        })
+        this.results = charactersPlusCastInformation;
       } catch(err) {
         console.error(err)
       }
-    }
-  }
+    },
+    async getCastInformation() {
+      try{
+        const url = `https://api.tvmaze.com/shows/82?embed=cast`;
+        const { data } = await axios.get(url);
+        this.cast = data._embedded.cast;
+      } catch(err) {
+        console.error(err);
+      }
+    },
+  },
+  beforeMount() {
+    this.getCastInformation()
+  },
 }
 </script>
 
