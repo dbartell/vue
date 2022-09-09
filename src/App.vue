@@ -7,7 +7,6 @@
 </template>
 
 <script>
-import { ref } from 'vue';
 import axios from "axios";
 
 import Header from './components/Header.vue';
@@ -32,15 +31,16 @@ export default {
   },
   methods: {
     async fetchCharacter() {
-
       try {
         this.loading = false;
         this.error = null;
         const url = `https://www.anapioficeandfire.com/api/characters?name=${this.search}`;
         const { data } = await axios.get(url);
         const charactersPlusCastInformation = data.map(character => {
-          const foundCastInformation = this.cast.find(castMember => castMember.character.name === character.name)
-          return {...character, ...foundCastInformation.character};
+          const foundCastInformation = this.cast.find(castMember => castMember.character.name.includes(character.name));
+          return (foundCastInformation)
+            ? {...character, ...foundCastInformation.character}
+            : character;
         })
         this.results = charactersPlusCastInformation;
       } catch(err) {
@@ -57,7 +57,7 @@ export default {
       }
     },
   },
-  beforeMount() {
+  created() {
     this.getCastInformation()
   },
 }
@@ -67,6 +67,7 @@ export default {
 @import 'vue-search-input/dist/styles.css';
 
 #app {
+  --primary-color: #42b883;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
