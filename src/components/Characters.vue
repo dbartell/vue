@@ -26,7 +26,7 @@
   .characters {
     display: grid;
     grid-template-rows: 1fr;
-    grid-template-columns: 350px;
+    grid-template-columns: 400px;
     justify-content: center;
   }
 </style>

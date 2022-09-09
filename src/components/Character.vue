@@ -8,18 +8,23 @@
       <p>Born: <span>{{ character.born }}</span></p>
       <p v-if="character.culture">Culture: <span>{{ character.culture }}</span></p>
     </div>
+    <Accordion heading="Allegiences">
+      <p v-for="allegiance in character.allegiances">{{allegiance}}</p>
+    </Accordion>
   </div>
 </template>
 
 <script>
-import Character from './Character.vue';
-
+import Accordion from './Accordion.vue';
 export default {
   props: {
     character: {
       type: Object,
       required: true,
     },
+  },
+  components: {
+    Accordion
   },
   created() {
     console.log(this.character)
@@ -32,6 +37,10 @@ export default {
     display: flex;
     flex-direction: column;
     margin: 2rem auto;
+    width: 100%;
+  }
+  .character-card img {
+    margin-bottom: 1rem;
   }
   .character-card p {
     text-align: left;
