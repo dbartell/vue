@@ -6,9 +6,8 @@
       <p>Name: <span>{{ character.name }}</span></p>
       <p>Played By: <span>{{ character.playedBy[0] }}</span></p>
       <p>Born: <span>{{ character.born }}</span></p>
-      <p>Culture: <span>{{ character.culture }}</span></p>
+      <p v-if="character.culture">Culture: <span>{{ character.culture }}</span></p>
     </div>
-    <div></div>
   </div>
 </template>
 

@@ -1,13 +1,22 @@
 <template>
   <div id="app">
-    <Header title="Game of Thrones Character Search"/>
-    <SearchInput aria-label="Search" v-on:keyup="fetchCharacter($event)" v-model="search"/>
-    <Characters v-if="!loading && !error" :characters="results">
+    <Header title="Game of Thrones Character Search" />
+    <SearchInput
+      aria-label="Search"
+      v-on:keyup="fetchCharacter($event)"
+      v-model="search"
+    />
+    <Characters
+      v-if="!loading && !error && results.length > 0"
+      :characters="results"
+    />
+    <p v-if="!loading && !error && results.length === 0">No Results</p>
+    <p v-if="error">Error</p>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 
 import Header from './components/Header.vue';
 import SearchInput from 'vue-search-input';
@@ -26,41 +35,48 @@ export default {
       results: [],
       cast: [],
       loading: false,
-      error: null
-    }
+      error: null,
+    };
   },
   methods: {
     async fetchCharacter() {
       try {
+        //name could be blank and return random results
+        if (!this.search) return;
         this.loading = false;
         this.error = null;
         const url = `https://www.anapioficeandfire.com/api/characters?name=${this.search}`;
         const { data } = await axios.get(url);
-        const charactersPlusCastInformation = data.map(character => {
-          const foundCastInformation = this.cast.find(castMember => castMember.character.name.includes(character.name));
-          return (foundCastInformation)
-            ? {...character, ...foundCastInformation.character}
+        const charactersPlusCastInformation = data.map((character) => {
+          const foundCastInformation = this.cast.find((castMember) =>
+            castMember.character.name.includes(character.name)
+          );
+          //foundCastInformation could return empty
+          return foundCastInformation
+            ? { ...character, ...foundCastInformation.character }
             : character;
-        })
+        });
         this.results = charactersPlusCastInformation;
-      } catch(err) {
-        console.error(err)
+      } catch (err) {
+        this.error = err;
+        console.error(err);
       }
     },
     async getCastInformation() {
-      try{
+      try {
         const url = `https://api.tvmaze.com/shows/82?embed=cast`;
         const { data } = await axios.get(url);
         this.cast = data._embedded.cast;
-      } catch(err) {
+      } catch (err) {
+        this.error = err;
         console.error(err);
       }
     },
   },
   created() {
-    this.getCastInformation()
+    this.getCastInformation();
   },
-}
+};
 </script>
 
 <style>
